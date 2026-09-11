@@ -1,0 +1,25 @@
+node_modules/
+.wrangler/
+.dev.vars
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+
+# Source data is intentionally excluded. The public repository only contains SQL seed data.
+outputs/
+output/
+data-private/
+*.xlsx
+*.xls
+
+# Never commit uploaded payment evidence or credentials.
+proofs-private/
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Generated from the supplied workbook. Contains real member/payment data and must stay private.
+private-migration/
