@@ -1,36 +1,28 @@
 {
-	"$schema": "./node_modules/wrangler/config-schema.json",
-	"name": "swasembada-hotmix",
-	"main": "src/index.js",
-	"compatibility_date": "2026-09-12",
-	"assets": {
-		"directory": "./public",
-		"binding": "ASSETS",
-		"run_worker_first": [
-			"/api/*"
-		]
-	},
-	"d1_databases": [
-		{
-			"binding": "DB",
-			"database_name": "swasembada-hotmix",
-			"database_id": "b52ff934-b9e2-4faf-88a4-82425f2600df",
-			"migrations_dir": "migrations"
-		},
-		{
-			"binding": "swasembada_hotmix",
-			"database_name": "swasembada-hotmix",
-			"database_id": "b52ff934-b9e2-4faf-88a4-82425f2600df",
-			"remote": true
-		}
-	],
-	"r2_buckets": [
-		{
-			"binding": "PROOFS",
-			"bucket_name": "swasembada-hotmix-proofs"
-		}
-	],
-	"observability": {
-		"enabled": true
-	}
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "swasembada-hotmix",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-12",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "swasembada-hotmix",
+      "database_id": "b52ff934-b9e2-4faf-88a4-82425f2600df",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "PROOFS",
+      "bucket_name": "swasembada-hotmix-proofs"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
 }
