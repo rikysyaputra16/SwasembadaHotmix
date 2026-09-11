@@ -1,0 +1,68 @@
+
+  <div class="app">
+    <aside>
+    <div class="brand"><div class="brand-mark">RT</div><div><h1>RT 01 / RW 14 Cendrawasih</h1><small>Wilayah Atas &middot; v1.1.0 Cloudflare</small></div></div>
+      <nav aria-label="Navigasi utama">
+        <button class="nav-btn active" data-page="dashboard">Ringkasan</button>
+        <button class="nav-btn" data-page="anggota">Data Anggota</button>
+        <button class="nav-btn" data-page="rencana">Rencana Angsuran</button>
+        <button class="nav-btn" data-page="pembayaran">Pembayaran</button>
+        <button class="nav-btn" data-page="petunjuk">Petunjuk Teknis</button>
+      </nav>
+      <div class="privacy">Data utama tersimpan di Cloudflare D1. Bukti pembayaran tersimpan privat di Cloudflare R2.</div>
+    </aside>
+    <main>
+      <header class="topbar">
+        <div><h2>Panitia Pelaksana Swasembada Hotmix</h2></div>
+        <div class="top-actions">
+          <button id="exportExcelBtn" type="button" class="btn small">Export Excel</button><span id="autoSaveStatus" class="badge">Menghubungkan Cloudflare...</span>
+        </div>
+      </header>
+      <div hidden>
+        <span id="proofFolderBadge"></span><span id="connectionBadge"></span>
+        <button id="proofFolderBtn" type="button"></button><button id="connectBtn" type="button"></button><button id="saveBtn" type="button"></button>
+        <input id="fileInput" type="file" accept=".xlsx,.xls">
+      </div>
+
+      <div class="content">
+        <section id="dashboard" class="page active">
+          <div class="page-head"><div><h3>Ringkasan Pembayaran</h3><p id="dashboardSubtitle">Posisi data terkini wilayah atas.</p></div><button class="btn" onclick="window.print()">Cetak Ringkasan</button></div>
+          <div class="kpis">
+            <div class="card kpi"><div class="label">Anggota Aktif</div><div class="value" id="kpiMembers">0</div><div class="hint">Rumah peserta swasembada</div></div>
+            <div class="card kpi"><div class="label">Target Dana</div><div class="value" id="kpiTarget">Rp0</div><div class="hint">Total kewajiban anggota</div></div>
+            <div class="card kpi"><div class="label">Sudah Diterima</div><div class="value" id="kpiPaid">Rp0</div><div class="hint" id="kpiPayments">0 transaksi</div></div>
+            <div class="card kpi"><div class="label">Sisa Tagihan</div><div class="value" id="kpiRemaining">Rp0</div><div class="hint">Belum diterima panitia</div></div>
+          </div>
+          <div class="dash-grid">
+            <div class="card"><div class="card-head"><h4>Progres dan Status</h4><p>Terhitung otomatis dari seluruh transaksi.</p></div><div class="card-body progress-wrap"><div id="donut" class="donut"><div class="donut-label"><span id="progressText">0%</span><small>terkumpul</small></div></div><div id="statusLegend" class="legend"></div></div></div>
+            <div class="card"><div class="card-head"><h4>Tagihan Tersisa Terbesar</h4><p>Lima anggota yang perlu menjadi perhatian.</p></div><div id="outstandingList" class="card-body outstanding"></div></div>
+          </div>
+          <div id="paymentHistoryCard" class="card arrears-card">
+            <div class="arrears-head">
+              <div><h4>History Pembayaran Bulanan</h4><p>Menampilkan pembayaran berdasarkan bulan dan anggota yang dipilih.</p><p class="print-only">Periode history: <strong id="historyPrintPeriod"></strong><br>Anggota: <strong id="historyPrintMember"></strong></p></div>
+              <div class="arrears-controls screen-only"><button id="printHistoryBtn" class="btn">Cetak History Ini</button><div class="month-filter history-member-filter"><label for="historyMember">Anggota</label><select id="historyMember"><option value="">Semua Anggota</option></select></div><div class="month-filter"><label for="historyMonth">Bulan history</label><input id="historyMonth" type="month"></div></div>
+            </div>
+            <div class="arrears-summary"><span id="historyCount" class="badge">0 transaksi</span><span id="historyTotal" class="badge amount">Total Rp 0</span></div>
+            <div id="historyPayments" class="card-body recent-list dashboard-report-scroll"></div>
+          </div>
+          <div id="installmentMatrixCard" class="card arrears-card">
+            <div class="arrears-head">
+              <div><h4>Laporan Angsuran Anggota</h4><p>Rekap nominal angsuran yang sudah tertutup penuh untuk seluruh anggota aktif.</p><p class="print-only">Diperbarui: <strong id="installmentMatrixPrintDate"></strong></p></div>
+              <div class="arrears-controls screen-only"><button id="printInstallmentMatrixBtn" class="btn">Cetak Laporan Ini</button></div>
+            </div>
+            <div class="arrears-summary"><span id="installmentMatrixMemberCount" class="badge">0 anggota</span><span id="installmentMatrixPaidCount" class="badge amount">0 periode lunas</span><span id="installmentMatrixExcessTotal" class="badge amount">Dana lebih Rp 0</span></div>
+            <div class="table-scroll installment-matrix-scroll screen-installment-matrix"><table class="data-table installment-matrix"><thead id="installmentMatrixHead"></thead><tbody id="installmentMatrixRows"></tbody></table></div>
+            <div id="installmentMatrixPrintPages" class="matrix-print-pages" aria-hidden="true"></div>
+          </div>
+          <div id="currentArrearsCard" class="card arrears-card">
+            <div class="arrears-head">
+              <div><h4>Daftar Tunggakan Bulan Berjalan</h4><p>Semua pembayaran dihitung kumulatif untuk menutup periode penuh dari awal; sisa lebih bayar mengurangi cicilan paling akhir.</p><p class="print-only">Periode laporan: <strong id="currentArrearsPrintPeriod"></strong></p></div>
+              <div class="arrears-controls screen-only"><button id="printCurrentArrearsBtn" class="btn">Cetak Daftar Ini</button><div class="month-filter"><label for="arrearsMonth">Periode laporan</label><input id="arrearsMonth" type="month"></div></div>
+            </div>
+            <div class="arrears-summary"><span id="arrearsCount" class="badge alert">0 anggota menunggak</span><span id="arrearsTotal" class="badge amount">Total Rp0</span></div>
+            <div class="table-scroll dashboard-report-scroll"><table class="data-table"><thead><tr><th>Anggota</th><th>No. Rumah</th><th class="hide-mobile">No. HP</th><th>Tanggal Angsuran</th><th>Kewajiban s.d. Periode</th><th>Cicilan Dibayar s.d. Periode</th><th>Tunggakan</th><th>Periode Tertunggak</th><th class="screen-only">Tindakan</th></tr></thead><tbody id="arrearsRows"></tbody></table></div>
+          </div>
+        </section>
+
+        <section id="anggota" class="page">
+          <div class="page-head"><div><h3>Data Anggota</h3><p>Kelola data warga, nilai kewajiban, dan rencana angsuran.</p></div><button id="addMemberBtn" class="btn primary">Tambah Anggota</button></div>
