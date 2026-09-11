@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pembayaran Hotmix RT - Wilayah Atas v1.1.0 Cloudflare</title>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="/styles-01.css">
+  <link rel="stylesheet" href="/styles-02.css">
+  <link rel="stylesheet" href="/styles-03.css">
+</head>
+<body>
+  <div id="loading" style="padding:24px;font-family:sans-serif">Memuat aplikasi...</div>
+  <script type="module">
+    const fragments = await Promise.all(["/ui-01.html", "/ui-02.html", "/ui-03.html", "/ui-04.html"].map(async (url) => {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Gagal memuat ${url}`);
+      return response.text();
+    }));
+    document.body.innerHTML = fragments.join("");
+    for (const src of ["/app-01.js", "/app-02.js", "/app-03.js", "/app-04.js", "/app-05.js", "/app-06.js", "/app-07.js", "/app-08.js", "/app-09.js", "/app-10.js", "/app-11.js", "/app-12.js", "/app-13.js", "/app-14.js", "/app-15.js", "/app-16.js"]) {
+      await new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = () => reject(new Error(`Gagal memuat ${src}`));
+        document.body.appendChild(script);
+      });
+    }
+  </script>
+</body>
+</html>
