@@ -1,0 +1,59 @@
+        <div class="form-group full"><label for="paymentProof">Bukti Pembayaran</label><input id="paymentProof" type="file" accept="image/jpeg,image/png,image/webp,application/pdf"><small id="paymentProofStatus">JPG, PNG, WebP, atau PDF; maksimal 10 MB. File disimpan ke Cloudflare R2.</small></div>
+        <div class="form-group full"><label for="paymentNote">Catatan</label><textarea id="paymentNote" rows="3"></textarea></div>
+      </div></div>
+      <div class="modal-actions"><button type="button" class="btn" data-close="paymentDialog">Batal</button><button class="btn primary" type="submit">Simpan Pembayaran</button></div>
+    </form>
+  </dialog>
+  <dialog id="receiptDialog" class="receipt-dialog">
+    <div class="modal-head"><h4>Kwitansi Pembayaran Digital</h4><button type="button" class="x" data-close="receiptDialog" aria-label="Tutup">&times;</button></div>
+    <div class="modal-body">
+      <input id="receiptPaymentId" type="hidden">
+      <div class="receipt-preview"><canvas id="receiptCanvas" width="1080" height="1350" aria-label="Pratinjau gambar kwitansi pembayaran"></canvas></div>
+      <div class="receipt-advice"><strong>Format yang disarankan:</strong> PNG vertikal 1080 × 1350 piksel agar tajam dan mudah dibaca di WhatsApp. Tombol Bagikan / WhatsApp akan mengunduh PNG lalu membuka chat sesuai No. HP anggota; lampirkan file yang baru diunduh. Periksa seluruh data sebelum dikirim. Desain ini adalah identitas resmi panitia, bukan bukti transfer bank.</div>
+    </div>
+    <div class="modal-actions"><button type="button" class="btn" data-close="receiptDialog">Tutup</button><button id="downloadReceiptBtn" type="button" class="btn">Unduh PNG</button><button id="shareReceiptBtn" type="button" class="btn share-receipt">Bagikan / WhatsApp</button></div>
+  </dialog>
+  <dialog id="storageDialog">
+    <div class="modal-head"><h4>Status Penyimpanan Cloudflare</h4><button type="button" class="x" data-close="storageDialog" aria-label="Tutup">&times;</button></div>
+    <div class="modal-body">
+      <div class="note">Aplikasi web menggunakan Cloudflare D1 untuk data terstruktur dan Cloudflare R2 untuk bukti pembayaran. Tidak diperlukan akses folder lokal.</div>
+      <div class="storage-steps">
+        <div class="storage-step"><div><strong>Cloudflare R2</strong><small>Penyimpanan bukti pembayaran.</small><div id="setupProofStatus" class="status-text">Memeriksa...</div></div><button id="setupProofBtn" type="button" class="btn" disabled>Otomatis</button></div>
+        <div class="storage-step"><div><strong>Cloudflare D1</strong><small>Database utama aplikasi. Excel tersedia sebagai export.</small><div id="setupExcelStatus" class="status-text">Memeriksa...</div></div><button id="setupExcelBtn" type="button" class="btn" disabled>Otomatis</button></div>
+      </div>
+    </div>
+    <div class="modal-actions"><button id="setupDoneBtn" type="button" class="btn primary" disabled>Selesai</button></div>
+  </dialog>
+  <dialog id="paymentInfoDialog">
+    <div class="modal-head"><h4>Informasi Pembayaran</h4><button type="button" class="x" data-close="paymentInfoDialog" aria-label="Tutup">&times;</button></div>
+    <div class="modal-body payment-info-list">
+      <section class="payment-info-channel">
+        <h5>Transfer ke Rekening Bendahara Panitia</h5>
+        <div class="account-box"><span id="paymentBankText">Konfigurasi D1</span><strong id="paymentAccountText">-</strong><span id="paymentAccountNameText">Tujuan pembayaran belum dimuat</span></div>
+      </section>
+      <section class="payment-info-channel">
+        <h5>Tunai melalui Panitia Pelaksana</h5>
+        <ol id="cashCollectorsList">
+          <li>Daftar penerima tunai akan dimuat dari konfigurasi D1.</li>
+        </ol>
+      </section>
+    </div>
+    <div class="modal-actions"><button type="button" class="btn primary" data-close="paymentInfoDialog">Tutup</button></div>
+  </dialog>
+  <dialog id="reminderDialog">
+    <div class="modal-head"><h4>Pengingat Pembayaran WhatsApp</h4><button type="button" class="x" data-close="reminderDialog" aria-label="Tutup">&times;</button></div>
+    <div class="modal-body">
+      <input id="reminderMemberId" type="hidden">
+      <div class="reminder-summary">
+        <div><span>Anggota</span><strong id="reminderMemberName">-</strong></div>
+        <div><span>Tagihan</span><strong id="reminderNextPeriod">-</strong></div>
+        <div><span>Total sudah mengangsur</span><strong id="reminderPaid">Rp 0</strong></div>
+        <div><span>Sisa tagihan</span><strong id="reminderRemaining">Rp 0</strong></div>
+      </div>
+      <div class="form-group"><label for="reminderMessage">Template pesan</label><textarea id="reminderMessage" class="reminder-message" readonly></textarea><small>Pesan dapat disalin atau langsung dibuka melalui WhatsApp.</small></div>
+    </div>
+    <div class="modal-actions"><button type="button" class="btn" data-close="reminderDialog">Tutup</button><button id="copyReminderBtn" type="button" class="btn">Salin Pesan</button><button id="openWhatsAppBtn" type="button" class="btn whatsapp">Buka WhatsApp</button></div>
+  </dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  
