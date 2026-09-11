@@ -1,0 +1,72 @@
+            </article>
+            <article class="card guide-flow">
+              <h4>Alur Pembayaran Tunai</h4>
+              <ol>
+                <li>Warga membayar sesuai jadwal yang dipilih kepada PIC.</li>
+                <li>PIC mengisi dan menandatangani kartu angsuran.</li>
+                <li>PIC menyerahkan uang tunai kepada Bendahara Panitia.</li>
+                <li>Bendahara melakukan verifikasi dan pencatatan.</li>
+                <li>PIC dan Bendahara menandatangani Berita Acara Serah Terima Kas.</li>
+                <li>Bendahara memperbarui laporan keuangan dan mengirim konfirmasi angsuran di Grup Panitia.</li>
+                <li>Setiap akhir bulan, Bendahara menyampaikan laporan keuangan kepada seluruh warga melalui Grup WhatsApp.</li>
+              </ol>
+            </article>
+          </div>
+
+          <div class="card guide-footer" aria-label="Hubungan kerja">
+            <div class="guide-check"><strong>1. Terima</strong>PIC menerima pembayaran atau konfirmasi dari warga.</div>
+            <div class="guide-check"><strong>2. Verifikasi</strong>Pengawas memeriksa administrasi; Bendahara memeriksa dana.</div>
+            <div class="guide-check"><strong>3. Rekonsiliasi</strong>PIC dan Bendahara menyamakan pencatatan serta arsip bukti.</div>
+            <div class="guide-check"><strong>4. Laporkan</strong>Bendahara menyampaikan laporan bulanan kepada warga.</div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <dialog id="memberDialog">
+    <form id="memberForm">
+      <div class="modal-head"><h4 id="memberDialogTitle">Tambah Anggota</h4><button type="button" class="x" data-close="memberDialog" aria-label="Tutup">&times;</button></div>
+      <div class="modal-body"><input type="hidden" id="memberEditId"><div class="form-grid">
+        <div class="form-group"><label for="memberName">Nama *</label><input id="memberName" required></div>
+        <div class="form-group"><label for="memberHouse">No. Rumah *</label><input id="memberHouse" required></div>
+        <div class="form-group"><label for="memberPhone">No. HP</label><input id="memberPhone" inputmode="tel"></div>
+        <div class="form-group"><label for="memberTarget">Total Biaya *</label><input id="memberTarget" type="number" min="1" step="1" required></div>
+        <div class="form-group"><label for="memberInstallment">Nominal Angsuran</label><input id="memberInstallment" type="number" min="0" step="1"></div>
+        <div class="form-group"><label for="memberTerm">Lama Angsuran</label><input id="memberTerm" placeholder="Contoh: 24 Bulan"></div>
+        <div class="form-group"><label for="memberPlanType">Jenis Angsuran</label><select id="memberPlanType"><option value="Tetap">Tetap</option><option value="Custom">Custom</option><option value="Bayar Penuh">Bayar Penuh</option></select><small>Custom memungkinkan nominal berbeda pada setiap periode.</small></div>
+        <div class="form-group"><label for="memberDue">Tanggal Angsuran</label><input id="memberDue" placeholder="Contoh: 10 atau Awal bulan"></div>
+        <div class="form-group"><label for="memberActive">Status Data</label><select id="memberActive"><option value="Ya">Aktif</option><option value="Tidak">Tidak aktif</option></select></div>
+        <div class="form-group full"><label for="memberNote">Catatan</label><textarea id="memberNote" rows="3"></textarea></div>
+      </div></div>
+      <div class="modal-actions"><button type="button" class="btn" data-close="memberDialog">Batal</button><button class="btn primary" type="submit">Simpan Anggota</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="planDialog">
+    <form id="planForm">
+      <div class="modal-head"><h4 id="planDialogTitle">Tambah Cicilan Custom</h4><button type="button" class="x" data-close="planDialog" aria-label="Tutup">&times;</button></div>
+      <div class="modal-body"><input type="hidden" id="planEditId"><div id="planBalanceNote" class="note"></div><div class="form-grid">
+        <div class="form-group full"><label for="planMember">Anggota *</label><select id="planMember" required></select></div>
+        <div class="form-group"><label for="planSequence">Angsuran Ke *</label><input id="planSequence" type="number" min="1" step="1" required></div>
+        <div class="form-group"><label for="planType">Jenis *</label><select id="planType" required><option>Tetap</option><option>Custom</option><option>Bayar Penuh</option></select></div>
+        <div class="form-group"><label for="planDueMonth">Periode Tagihan *</label><input id="planDueMonth" type="month" required></div>
+        <div class="form-group"><label for="planDue">Tanggal Tagih</label><input id="planDue" placeholder="Contoh: 10 atau Awal bulan"></div>
+        <div class="form-group"><label for="planAmount">Nominal Rencana *</label><input id="planAmount" type="number" min="1" step="1" required></div>
+        <div class="form-group full"><label for="planNote">Catatan</label><textarea id="planNote" rows="3"></textarea></div>
+      </div></div>
+      <div class="modal-actions"><button type="button" class="btn" data-close="planDialog">Batal</button><button class="btn primary" type="submit">Simpan Rencana</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="paymentDialog">
+    <form id="paymentForm">
+      <div class="modal-head"><h4 id="paymentDialogTitle">Tambah Pembayaran</h4><button type="button" class="x" data-close="paymentDialog" aria-label="Tutup">&times;</button></div>
+      <div class="modal-body"><input type="hidden" id="paymentEditId"><div id="paymentBalanceNote" class="note"></div><div class="form-grid">
+        <div class="form-group full"><label for="paymentMember">Anggota *</label><select id="paymentMember" required></select></div>
+        <div class="form-group"><label for="paymentDate">Tanggal Pembayaran *</label><input id="paymentDate" type="date" required></div>
+        <div class="form-group"><label for="paymentAmount">Nominal Bayar *</label><input id="paymentAmount" type="number" min="1" step="1" required></div>
+        <div class="form-group"><label for="paymentCategory">Kategori Pembayaran *</label><select id="paymentCategory" required><option value="Cicilan">Cicilan</option><option value="Custom Pembayaran">Custom Pembayaran</option></select><small>Kedua kategori mengakumulasi periode penuh; sisa lebih bayar mengurangi cicilan paling akhir.</small></div>
+        <div class="form-group"><label for="paymentMethod">Metode *</label><select id="paymentMethod" required><option>Tunai</option><option>Transfer</option><option>Lainnya</option></select></div>
+        <div id="paymentPeriodGroup" class="form-group"><label for="paymentPeriod">Periode Ke</label><input id="paymentPeriod" readonly aria-readonly="true"><small>Terisi otomatis ketika nominal kumulatif melunasi satu atau beberapa periode penuh.</small></div>
+        <div class="form-group full"><label for="paymentReceiver">Penerima *</label><input id="paymentReceiver" required value=""></div>
