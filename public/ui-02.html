@@ -1,0 +1,77 @@
+          <div class="toolbar"><input id="memberSearch" class="field search" placeholder="Cari nama, rumah, nomor HP, atau ID..."><select id="memberStatus" class="field" style="max-width:190px"><option value="">Semua status</option><option>Belum Bayar</option><option>Sebagian</option><option>Lunas</option></select></div>
+          <div class="card table-card"><div class="table-scroll"><table class="data-table"><thead><tr><th>Anggota</th><th>No. Rumah</th><th class="hide-mobile">No. HP</th><th>Total Biaya</th><th>Nominal Angsuran</th><th>Lama / Jenis</th><th>Total Terbayar</th><th>Sisa</th><th>Status</th><th>Pengingat WA</th><th>Tindakan</th></tr></thead><tbody id="memberRows"></tbody></table></div></div>
+        </section>
+
+        <section id="rencana" class="page">
+          <div class="page-head"><div><h3>Rencana Angsuran</h3><p>Jadwal standar mengikuti Lama Angsuran; jadwal Custom dapat diubah per periode.</p></div><button id="addPlanBtn" class="btn primary">Tambah Cicilan Custom</button></div>
+          <div class="toolbar"><input id="planSearch" class="field search" placeholder="Cari nama, rumah, ID anggota, atau ID rencana..."><select id="planMemberFilter" class="field" style="max-width:260px"><option value="">Semua anggota</option></select><select id="planTypeFilter" class="field" style="max-width:180px"><option value="">Semua jenis</option><option>Tetap</option><option>Custom</option><option>Bayar Penuh</option></select><button id="regeneratePlanBtn" class="btn">Susun Ulang Anggota</button></div>
+          <div id="planControlNote" class="note"></div>
+          <div class="card table-card"><div class="table-scroll"><table class="data-table"><thead><tr><th>Anggota</th><th>Jenis</th><th>Ke</th><th>Periode Tagihan</th><th>Tanggal Tagih</th><th>Rencana</th><th>Dialokasikan</th><th>Sisa Cicilan</th><th>Status</th><th>Tindakan</th></tr></thead><tbody id="planRows"></tbody></table></div></div>
+        </section>
+
+        <section id="pembayaran" class="page">
+          <div class="page-head"><div><h3>Transaksi Pembayaran</h3><p>Catat satu baris untuk setiap penerimaan dana.</p></div><button id="addPaymentBtn" class="btn primary">Tambah Pembayaran</button></div>
+          <div class="toolbar"><input id="paymentSearch" class="field search" placeholder="Cari anggota, ID transaksi, penerima, atau metode..."></div>
+          <div class="card table-card"><div class="table-scroll"><table class="data-table"><thead><tr><th>Tanggal</th><th>Anggota</th><th>ID Transaksi</th><th>Kategori</th><th>Periode</th><th>Nominal</th><th>Metode</th><th class="hide-mobile">Penerima</th><th>Bukti</th><th>Kwitansi</th><th>Tindakan</th></tr></thead><tbody id="paymentRows"></tbody></table></div></div>
+        </section>
+
+        <section id="petunjuk" class="page">
+          <div class="page-head">
+            <div><h3>Petunjuk Teknis</h3><p>Pedoman penarikan iuran Program Perbaikan Jalan RT 001/RW 014 Perumahan Lembah Hijau.</p></div>
+            <div class="top-actions"><button id="paymentInfoBtn" type="button" class="btn primary">Informasi Pembayaran</button><a class="btn" href="../Petunjuk%20Teknis.pdf" target="_blank" rel="noopener">Buka PDF Asli</a></div>
+          </div>
+
+          <div class="card guide-hero">
+            <h4>Tujuan Pedoman</h4>
+            <p>Menciptakan mekanisme penarikan iuran yang tertib, transparan, terdokumentasi, dan dapat dipertanggungjawabkan kepada seluruh warga. Setiap wilayah dikelola oleh seorang PIC yang bertanggung jawab atas administrasi pembayaran dan didampingi pengawas.</p>
+            <div class="region-list" aria-label="Pembagian wilayah"><span class="region-chip">Wilayah Atas</span><span class="region-chip">Wilayah Tengah</span><span class="region-chip">Wilayah Bawah</span></div>
+          </div>
+
+          <div class="guide-grid">
+            <article class="card guide-card">
+              <span class="role">Pelaksana Wilayah</span><h4>PIC Wilayah</h4>
+              <ul>
+                <li>Mengingatkan dan menagih warga sesuai jadwal pembayaran masing-masing.</li>
+                <li>Menerima konfirmasi pembayaran tunai maupun transfer.</li>
+                <li>Mengisi dan menandatangani kartu angsuran sebagai bukti pembayaran.</li>
+                <li>Mengirim bukti pembayaran dan salinan kwitansi ke Grup Panitia.</li>
+                <li>Menyetorkan uang tunai kepada Bendahara atau memastikan transfer masuk ke rekening panitia.</li>
+                <li>Menyinkronkan data pembayaran dengan Bendahara secara berkala.</li>
+              </ul>
+            </article>
+            <article class="card guide-card">
+              <span class="role">Pendamping dan Verifikator</span><h4>Pengawas Wilayah</h4>
+              <ul>
+                <li>Mengawasi penarikan iuran agar sesuai pedoman dan membantu penagihan jika diperlukan.</li>
+                <li>Memastikan setiap pembayaran ditandai pada kartu angsuran.</li>
+                <li>Memeriksa kesesuaian nominal, kartu angsuran, dan bukti yang dilaporkan.</li>
+                <li>Menjadi saksi administrasi pembayaran tunai apabila diperlukan.</li>
+                <li>Membantu rekapitulasi, mengingatkan keterlambatan, dan melaporkan kendala kepada Ketua Panitia.</li>
+              </ul>
+              <div class="guide-alert"><strong>Penting:</strong> Pengawas tidak bertugas menerima atau menyimpan uang iuran warga.</div>
+            </article>
+            <article class="card guide-card">
+              <span class="role">Pengelola Keuangan</span><h4>Bendahara Panitia</h4>
+              <ul>
+                <li>Menerima setoran, bukti pembayaran, dan salinan kwitansi dari PIC.</li>
+                <li>Memverifikasi dan menyinkronkan data bersama masing-masing PIC.</li>
+                <li>Mencatat transaksi ke buku kas atau laporan keuangan program.</li>
+                <li>Menyimpan seluruh bukti pembayaran dan kwitansi sebagai arsip.</li>
+                <li>Menyusun laporan penerimaan, warga yang membayar, saldo kas, dan pengeluaran.</li>
+                <li>Menyampaikan laporan bulanan kepada warga melalui Grup WhatsApp RT.</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="guide-flow-grid">
+            <article class="card guide-flow">
+              <h4>Alur Pembayaran Transfer</h4>
+              <ol>
+                <li>Warga membayar sesuai jadwal yang dipilih.</li>
+                <li>PIC menerima konfirmasi dan meneruskan bukti transfer kepada Bendahara.</li>
+                <li>Bendahara mengecek mutasi untuk memverifikasi pembayaran.</li>
+                <li>Bendahara mengonfirmasi pembayaran kepada PIC.</li>
+                <li>PIC mengisi dan menandatangani kartu angsuran.</li>
+                <li>Bendahara memperbarui laporan keuangan dan mengirim konfirmasi angsuran di Grup Panitia.</li>
+                <li>Setiap awal bulan, Bendahara menyampaikan laporan keuangan kepada seluruh warga melalui Grup WhatsApp.</li>
+              </ol>
