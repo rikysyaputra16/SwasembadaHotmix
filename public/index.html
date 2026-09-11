@@ -18,7 +18,10 @@
       return response.text();
     }));
     document.body.innerHTML = fragments.join("");
-    for (const src of ["/app-01.js", "/app-02.js", "/app-03.js", "/app-04.js", "/app-05.js", "/app-06.js", "/app-07.js", "/app-08.js", "/app-09.js", "/app-10.js", "/app-11.js", "/app-12.js", "/app-13.js", "/app-14.js", "/app-15.js", "/app-16.js"]) {
+
+    // app-01 initializes state by calling loadLocal(), which is declared in app-02.
+    // Load app-02 first so the initialization dependency exists before app-01 executes.
+    for (const src of ["/app-02.js", "/app-01.js", "/app-03.js", "/app-04.js", "/app-05.js", "/app-06.js", "/app-07.js", "/app-08.js", "/app-09.js", "/app-10.js", "/app-11.js", "/app-12.js", "/app-13.js", "/app-14.js", "/app-15.js", "/app-16.js"]) {
       await new Promise((resolve, reject) => {
         const script = document.createElement("script");
         script.src = src;
