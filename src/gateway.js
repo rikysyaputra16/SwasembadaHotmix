@@ -378,6 +378,10 @@ export default {
       }
 
       if (path === "/login.html" && request.method === "GET") {
+        return harden(redirect("/login"));
+      }
+
+      if (path === "/login" && request.method === "GET") {
         return harden(await app.fetch(request, env, ctx));
       }
 
@@ -397,11 +401,11 @@ export default {
 
       if (!session) {
         if (path.startsWith("/api/")) return harden(json({ ok: false, error: "Sesi login diperlukan." }, 401));
-        if (isHtmlNavigation(request)) return harden(redirect("/login.html"));
+        if (isHtmlNavigation(request)) return harden(redirect("/login"));
         return harden(new Response("Unauthorized", { status: 401 }));
       }
 
-      if (path === "/login.html") return harden(redirect("/"));
+      if (path === "/login" || path === "/login.html") return harden(redirect("/"));
 
       if (path === "/api/documents/petunjuk-teknis" && request.method === "GET") {
         return harden(await getGuidePdf(env));
