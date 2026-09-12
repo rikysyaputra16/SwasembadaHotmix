@@ -6,7 +6,7 @@ const LOGIN_WINDOW_MS = 15 * 60 * 1000;
 const LOGIN_IP_LIMIT = 20;
 const ACCOUNT_LOCK_THRESHOLD = 8;
 const ACCOUNT_LOCK_MS = 15 * 60 * 1000;
-const PBKDF2_ITERATIONS = 600000;
+const PBKDF2_ITERATIONS = 100000;
 const ENCODER = new TextEncoder();
 
 function json(data, status = 200, extraHeaders = {}) {
@@ -220,8 +220,12 @@ async function login(request, env) {
   const now = Date.now();
   const dummySalt = ENCODER.encode("hotmix-login-dummy-salt-v1");
   const salt = user ? fromBase64Url(user.password_salt) : dummySalt;
-  const iterations = user ? Number(user.password_iterations || PBKDF2_ITERATIONS) : PBKDF2_ITERATIONS;
-  const candidate = await derivePassword(password, salt, iterations);
+  const storedIterations = user ? Number(user.password_iterations || PBKDF2_ITERATIONS) : PBKDF2_ITERATIONS;
+  if (storedIterations > PBKDF2_ITERATIONS) {
+    await audit(env, user?.id || null, "login_hash_upgrade_required", `iterations=${storedIterations}`);
+    return json({ ok: false, error: "Password akun perlu diperbarui oleh administrator." }, 503);
+  }
+  const candidate = await derivePassword(password, salt, storedIterations);
   const expected = user ? fromBase64Url(user.password_hash) : new Uint8Array(32);
   const passwordOk = timingSafeEqual(candidate, expected);
 
@@ -378,11 +382,12 @@ export default {
       }
 
       if (path === "/login.html" && request.method === "GET") {
-        return harden(redirect("/login"));
+        return harden(redirect("/login", 301));
       }
 
       if (path === "/login" && request.method === "GET") {
-        return harden(await app.fetch(request, env, ctx));
+        const loginRequest = new Request(new URL("/login.html", request.url), request);
+        return harden(await app.fetch(loginRequest, env, ctx));
       }
 
       const session = await getSession(request, env);
@@ -405,7 +410,7 @@ export default {
         return harden(new Response("Unauthorized", { status: 401 }));
       }
 
-      if (path === "/login" || path === "/login.html") return harden(redirect("/"));
+      if (path === "/login") return harden(redirect("/"));
 
       if (path === "/api/documents/petunjuk-teknis" && request.method === "GET") {
         return harden(await getGuidePdf(env));
