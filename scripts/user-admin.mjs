@@ -10,7 +10,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(here, "..");
 const wranglerBin = join(projectRoot, "node_modules", "wrangler", "bin", "wrangler.js");
 const DB_NAME = process.env.D1_DATABASE || "swasembada-hotmix";
-const ITERATIONS = 600000;
+const ITERATIONS = 100000;
 const ROLES = new Set(["Admin", "Panitia", "Viewer"]);
 
 function sql(value) {
