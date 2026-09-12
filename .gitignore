@@ -1,25 +1,54 @@
+# Dependencies / local tooling
 node_modules/
 .wrangler/
 .dev.vars
+.dev.vars.*
 .env
 .env.*
 !.env.example
 .DS_Store
 Thumbs.db
+*.log
+*.tmp
 
-# Source data is intentionally excluded. The public repository only contains SQL seed data.
+# Source / operational data must stay local only.
 outputs/
 output/
 data-private/
+private-migration/
+proofs-private/
+backups/
+backup/
+
+# Database exports, local databases, snapshots, and generated dumps.
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+*.dump
+*.dump.gz
+*.bak
+*.backup
+*.sql.gz
+*backup*.sql
+*before-*.sql
+*before_*.sql
+d1-export*.sql
+database-export*.sql
+
+# Spreadsheet / tabular exports can contain resident and payment data.
 *.xlsx
 *.xls
+*.csv
 
-# Never commit uploaded payment evidence or credentials.
-proofs-private/
+# Never commit private keys, certificates containing private material, or credentials.
 *.pem
 *.key
 *.p12
 *.pfx
+credentials*.json
+service-account*.json
 
-# Generated from the supplied workbook. Contains real member/payment data and must stay private.
-private-migration/
+# Allow application schema migrations to remain version controlled.
+!migrations/*.sql
