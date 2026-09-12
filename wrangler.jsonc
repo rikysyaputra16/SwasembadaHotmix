@@ -1,7 +1,7 @@
-{
+﻿{
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "swasembada-hotmix",
-  "main": "src/router-feature-ui.js",
+  "main": "src/rbac-v2-router.js",
   "compatibility_date": "2026-09-11",
   "assets": {
     "directory": "./public",
@@ -26,3 +26,4 @@
     "enabled": true
   }
 }
+
