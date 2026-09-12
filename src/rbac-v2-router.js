@@ -1,0 +1,47 @@
+import base from "./rbac-router.js";
+
+const EXTRA_PERMISSION={key:"export.excel",menu:"Data & Export",label:"Export Excel"};
+
+async function exportAllowed(env,roleKey){
+  const row=await env.DB.prepare("SELECT allowed FROM app_role_permissions WHERE role_key=? AND permission_key=? LIMIT 1").bind(roleKey,EXTRA_PERMISSION.key).first();
+  return Boolean(row?.allowed);
+}
+
+function jsonResponse(data,status=200,headers={}){
+  const h=new Headers(headers);h.set("content-type","application/json; charset=utf-8");h.set("cache-control","no-store");
+  return new Response(JSON.stringify(data),{status,headers:h});
+}
+
+export default{
+  async fetch(request,env,ctx){
+    const url=new URL(request.url),path=url.pathname,method=request.method.toUpperCase();
+
+    if(path==="/api/permissions/current"&&method==="GET"){
+      const response=await base.fetch(request,env,ctx);if(!response.ok)return response;
+      const payload=await response.json();
+      payload.permissions={...(payload.permissions||{}),[EXTRA_PERMISSION.key]:await exportAllowed(env,payload.user?.roleKey||"viewer")};
+      payload.catalog=[...(payload.catalog||[]),EXTRA_PERMISSION];
+      return jsonResponse(payload,response.status,response.headers);
+    }
+
+    if(path==="/api/admin/roles"&&method==="GET"){
+      const response=await base.fetch(request,env,ctx);if(!response.ok)return response;
+      const payload=await response.json();
+      for(const role of payload.roles||[])role.permissions={...(role.permissions||{}),[EXTRA_PERMISSION.key]:await exportAllowed(env,role.key)};
+      payload.catalog=[...(payload.catalog||[]),EXTRA_PERMISSION];
+      return jsonResponse(payload,response.status,response.headers);
+    }
+
+    const roleMatch=path.match(/^\/api\/admin\/roles\/([A-Za-z0-9._-]+)$/);
+    if(roleMatch&&method==="PUT"){
+      const copy=request.clone();
+      const response=await base.fetch(request,env,ctx);if(!response.ok)return response;
+      const body=await copy.json().catch(()=>null),allowed=body?.permissions?.[EXTRA_PERMISSION.key]===true?1:0;
+      await env.DB.prepare(`INSERT INTO app_role_permissions(role_key,permission_key,allowed,updated_at) VALUES(?,?,?,CURRENT_TIMESTAMP) ON CONFLICT(role_key,permission_key) DO UPDATE SET allowed=excluded.allowed,updated_at=CURRENT_TIMESTAMP`).bind(roleMatch[1],EXTRA_PERMISSION.key,allowed).run();
+      const payload=await response.json();payload.permissions={...(payload.permissions||{}),[EXTRA_PERMISSION.key]:Boolean(allowed)};
+      return jsonResponse(payload,response.status,response.headers);
+    }
+
+    return base.fetch(request,env,ctx);
+  }
+};
