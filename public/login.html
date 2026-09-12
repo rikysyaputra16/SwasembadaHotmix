@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login - Swasembada Hotmix RT</title>
+  <style>
+    :root{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#102015;background:#eef4ef}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:linear-gradient(135deg,#edf5ef,#f9fbf9)}
+    .card{width:min(430px,100%);background:#fff;border:1px solid #dbe7de;border-radius:22px;box-shadow:0 20px 50px rgba(15,55,30,.12);padding:30px}
+    .brand{display:flex;gap:14px;align-items:center;margin-bottom:24px}.mark{width:54px;height:54px;border-radius:16px;background:#0b4a2a;color:#fff;display:grid;place-items:center;font-weight:800;font-size:20px}
+    h1{font-size:22px;margin:0 0 4px}.subtitle{margin:0;color:#627067;font-size:14px}label{display:block;font-weight:700;font-size:14px;margin:16px 0 7px}
+    input{width:100%;border:1px solid #cddbd1;border-radius:12px;padding:13px 14px;font-size:16px;outline:none}input:focus{border-color:#0b6a3a;box-shadow:0 0 0 3px rgba(11,106,58,.12)}
+    button{width:100%;margin-top:20px;border:0;border-radius:12px;padding:13px 16px;font-weight:800;font-size:15px;background:#0b4a2a;color:#fff;cursor:pointer}button:disabled{opacity:.65;cursor:wait}
+    .error{display:none;margin-top:14px;padding:11px 12px;border-radius:10px;background:#fff1f1;color:#9b1c1c;font-size:14px}.error.show{display:block}
+    .note{margin-top:18px;color:#6a766d;font-size:12px;line-height:1.55;text-align:center}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="brand"><div class="mark">RT</div><div><h1>Swasembada Hotmix</h1><p class="subtitle">RT 01 / RW 14 Cendrawasih</p></div></div>
+    <form id="loginForm" autocomplete="on">
+      <label for="username">Username</label>
+      <input id="username" name="username" autocomplete="username" maxlength="64" required autofocus>
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" maxlength="256" required>
+      <button id="loginBtn" type="submit">Masuk</button>
+      <div id="error" class="error" role="alert"></div>
+    </form>
+    <div class="note">Akses hanya untuk pengguna yang telah diberikan hak oleh Panitia Pelaksana.</div>
+  </main>
+  <script>
+    const form=document.getElementById("loginForm"),button=document.getElementById("loginBtn"),errorBox=document.getElementById("error");
+    (async()=>{try{const response=await fetch("/api/auth/me",{credentials:"same-origin",cache:"no-store"});if(response.ok)location.replace("/");}catch(_e){}})();
+    form.addEventListener("submit",async(event)=>{
+      event.preventDefault();errorBox.classList.remove("show");button.disabled=true;button.textContent="Memeriksa...";
+      try{
+        const response=await fetch("/api/auth/login",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:form.username.value.trim(),password:form.password.value})});
+        const payload=await response.json().catch(()=>({}));
+        if(!response.ok)throw new Error(payload.error||"Login gagal.");
+        location.replace("/");
+      }catch(error){errorBox.textContent=error.message||"Login gagal.";errorBox.classList.add("show");form.password.value="";form.password.focus();button.disabled=false;button.textContent="Masuk";}
+    });
+  </script>
+</body>
+</html>

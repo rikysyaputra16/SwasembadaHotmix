@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pembayaran Hotmix RT - Wilayah Atas v1.1.0 Cloudflare</title>
+  <title>Pembayaran Hotmix RT - Wilayah Atas</title>
   <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
   <link rel="stylesheet" href="/styles-01.css">
   <link rel="stylesheet" href="/styles-02.css">
@@ -12,15 +12,129 @@
 <body>
   <div id="loading" style="padding:24px;font-family:sans-serif">Memuat aplikasi...</div>
   <script type="module">
+    const nativeFetch = window.fetch.bind(window);
+    const authResponse = await nativeFetch("/api/auth/me", { credentials: "same-origin", cache: "no-store" });
+    if (!authResponse.ok) {
+      location.replace("/login.html");
+      throw new Error("Authentication required");
+    }
+    const auth = await authResponse.json();
+    window.HOTMIX_AUTH = auth;
+
+    window.fetch = async (input, init = {}) => {
+      const target = typeof input === "string" ? input : input?.url;
+      const url = new URL(target, location.href);
+      const method = String(init.method || (input instanceof Request ? input.method : "GET") || "GET").toUpperCase();
+      const options = { ...init, credentials: init.credentials || "same-origin" };
+      if (url.origin === location.origin && url.pathname.startsWith("/api/") && !["GET", "HEAD", "OPTIONS"].includes(method)) {
+        const headers = new Headers(init.headers || (input instanceof Request ? input.headers : undefined));
+        headers.set("X-CSRF-Token", auth.csrfToken);
+        options.headers = headers;
+      }
+      const response = await nativeFetch(input, options);
+      if (response.status === 401 && url.pathname !== "/api/auth/login") location.replace("/login.html");
+      return response;
+    };
+
     const fragments = await Promise.all(["/ui-01.html", "/ui-02.html", "/ui-03.html", "/ui-04.html"].map(async (url) => {
       const response = await fetch(url);
       if (!response.ok) throw new Error(`Gagal memuat ${url}`);
       return response.text();
     }));
     document.body.innerHTML = fragments.join("");
+    document.body.dataset.role = auth.user.role;
 
-    // app-01 initializes state by calling loadLocal(), which is declared in app-02.
-    // Load app-02 first so the initialization dependency exists before app-01 executes.
+    const brandingReplacements = [
+      [/Cloudflare D1 \+ R2 aktif/gi, "Database & Penyimpanan aktif"],
+      [/Cloudflare belum terhubung/gi, "Sistem belum terhubung"],
+      [/Cloudflare D1/gi, "Database"],
+      [/Cloudflare R2/gi, "Penyimpanan Dokumen"],
+      [/Cloudflare/gi, "Sistem"],
+    ];
+    const sanitizeText = (root = document.body) => {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      const nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      for (const node of nodes) {
+        let next = node.nodeValue;
+        for (const [pattern, replacement] of brandingReplacements) next = next.replace(pattern, replacement);
+        if (next !== node.nodeValue) node.nodeValue = next;
+      }
+    };
+    sanitizeText();
+    const brandingObserver = new MutationObserver((records) => {
+      for (const record of records) {
+        if (record.type === "characterData") sanitizeText(record.target.parentNode || document.body);
+        for (const node of record.addedNodes) if (node.nodeType === Node.ELEMENT_NODE) sanitizeText(node);
+      }
+    });
+    brandingObserver.observe(document.body, { subtree: true, childList: true, characterData: true });
+
+    const topActions = document.querySelector(".top-actions");
+    if (topActions) {
+      const userBadge = document.createElement("span");
+      userBadge.className = "badge connected";
+      userBadge.textContent = `${auth.user.displayName} · ${auth.user.role}`;
+      const logoutButton = document.createElement("button");
+      logoutButton.className = "btn small";
+      logoutButton.type = "button";
+      logoutButton.textContent = "Keluar";
+      logoutButton.addEventListener("click", async () => {
+        logoutButton.disabled = true;
+        try { await fetch("/api/auth/logout", { method: "POST" }); } finally { location.replace("/login.html"); }
+      });
+      topActions.append(userBadge, logoutButton);
+    }
+
+    const role = auth.user.role;
+    const writeButtonIds = ["addMemberBtn", "addPlanBtn", "regeneratePlanBtn", "addPaymentBtn"];
+    const applyRoleUi = (root = document) => {
+      if (role === "Viewer") {
+        for (const id of writeButtonIds) {
+          const element = document.getElementById(id);
+          if (element) element.hidden = true;
+        }
+      }
+      const buttons = root.querySelectorAll?.("[data-action]") || [];
+      for (const button of buttons) {
+        const action = String(button.dataset.action || "").toLowerCase();
+        if (role === "Viewer" && !["view-proof", "payment-reminder", "receipt"].includes(action)) button.hidden = true;
+        if (role === "Panitia" && action.includes("delete")) button.hidden = true;
+      }
+      const uploadGuideBtn = document.getElementById("uploadGuideBtn");
+      if (uploadGuideBtn) uploadGuideBtn.hidden = role !== "Admin";
+    };
+    applyRoleUi();
+    new MutationObserver((records) => {
+      for (const record of records) for (const node of record.addedNodes) if (node.nodeType === Node.ELEMENT_NODE) applyRoleUi(node);
+    }).observe(document.body, { subtree: true, childList: true });
+
+    const legacyGuideLink = [...document.querySelectorAll("a.btn")].find(a => a.textContent.trim() === "Buka PDF Asli");
+    if (legacyGuideLink) legacyGuideLink.href = "/api/documents/petunjuk-teknis";
+    let guideInput = null, uploadGuideBtn = null;
+    if (legacyGuideLink && role === "Admin") {
+      guideInput = document.createElement("input");
+      guideInput.type = "file"; guideInput.accept = "application/pdf"; guideInput.hidden = true; guideInput.id = "guidePdfInput";
+      uploadGuideBtn = document.createElement("button");
+      uploadGuideBtn.type = "button"; uploadGuideBtn.className = "btn"; uploadGuideBtn.id = "uploadGuideBtn"; uploadGuideBtn.textContent = "Upload / Ganti PDF";
+      legacyGuideLink.parentElement?.append(uploadGuideBtn, guideInput);
+      uploadGuideBtn.addEventListener("click", () => guideInput.click());
+      guideInput.addEventListener("change", async () => {
+        const file = guideInput.files?.[0];
+        if (!file) return;
+        if (file.type !== "application/pdf") { alert("Dokumen harus PDF."); return; }
+        uploadGuideBtn.disabled = true; uploadGuideBtn.textContent = "Mengunggah...";
+        try {
+          const form = new FormData(); form.append("file", file, file.name);
+          const response = await fetch("/api/admin/documents/petunjuk-teknis", { method: "PUT", body: form });
+          const payload = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(payload.error || "Upload gagal.");
+          alert("Petunjuk Teknis berhasil diperbarui.");
+        } catch (error) { alert(error.message || "Upload gagal."); }
+        finally { guideInput.value = ""; uploadGuideBtn.disabled = false; uploadGuideBtn.textContent = "Upload / Ganti PDF"; }
+      });
+    }
+
     for (const src of ["/app-02.js", "/app-01.js", "/app-03.js", "/app-04.js", "/app-05.js", "/app-06.js", "/app-07.js", "/app-08.js", "/app-09.js", "/app-10.js", "/app-11.js", "/app-12.js", "/app-13.js", "/app-14.js", "/app-15.js", "/app-16.js"]) {
       await new Promise((resolve, reject) => {
         const script = document.createElement("script");
@@ -30,6 +144,8 @@
         document.body.appendChild(script);
       });
     }
+    applyRoleUi();
+    sanitizeText();
   </script>
 </body>
 </html>

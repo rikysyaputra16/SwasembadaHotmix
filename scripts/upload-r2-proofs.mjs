@@ -26,20 +26,45 @@ if (missing.length) {
   process.exit(2);
 }
 
-const npx = process.platform === "win32" ? "npx.cmd" : "npx";
+const wranglerBin = join(
+  projectRoot,
+  "node_modules",
+  "wrangler",
+  "bin",
+  "wrangler.js"
+);
 let uploaded = 0;
 for (const entry of manifest) {
   const sourceFile = join(sourceRoot, entry.sourceRelativePath);
   const objectPath = `${bucket}/${entry.r2Key}`;
   const args = [
-    "wrangler", "r2", "object", "put", objectPath,
-    "--file", sourceFile,
-    "--content-type", entry.contentType || "application/octet-stream",
-    "--remote",
-  ];
+  "r2",
+  "object",
+  "put",
+  objectPath,
+  "--file",
+  sourceFile,
+  "--content-type",
+  entry.contentType || "application/octet-stream",
+  "--remote"
+];
   console.log(`${dryRun ? "[DRY RUN]" : "[UPLOAD]"} ${objectPath}`);
   if (dryRun) continue;
-  const result = spawnSync(npx, args, { stdio: "inherit", cwd: projectRoot });
+  const result = spawnSync(
+  process.execPath,
+  [wranglerBin, ...args],
+  {
+    stdio: "inherit",
+    cwd: projectRoot,
+    windowsHide: true
+  }
+);
+
+if (result.error) {
+  console.error(
+    `Failed to start Wrangler: ${result.error.message}`
+  );
+}
   if (result.status !== 0) {
     console.error(`Upload failed for ${entry.sourceRelativePath}.`);
     process.exit(result.status || 3);
