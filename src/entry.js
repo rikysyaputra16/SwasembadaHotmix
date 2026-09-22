@@ -23,6 +23,16 @@ export default {
       return withHeaders(await env.ASSETS.fetch(request));
     }
 
+    if (request.method === "GET" && url.pathname === "/login-map") {
+      const object = await env.PROOFS.get("branding/layout-cendrawasih-rt01.jpg");
+      if (!object) return new Response(null, { status: 404 });
+      const headers = new Headers();
+      headers.set("content-type", object.httpMetadata?.contentType || "image/jpeg");
+      headers.set("cache-control", "public, max-age=86400");
+      headers.set("x-content-type-options", "nosniff");
+      return new Response(object.body, { headers });
+    }
+
     return gateway.fetch(request, env, ctx);
   },
 };
