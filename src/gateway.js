@@ -189,6 +189,39 @@ async function audit(env, userId, event, detail = "") {
   }
 }
 
+async function verifyLoginChallenge(request, env, token) {
+  const unavailable = "Verifikasi keamanan sedang tidak tersedia. Coba lagi nanti.";
+  if (!env.TURNSTILE_SECRET_KEY || !env.TURNSTILE_SITE_KEY) {
+    return json({ ok: false, error: unavailable }, 503);
+  }
+  if (typeof token !== "string" || !token.trim() || token.length > 2048) {
+    return json({ ok: false, error: "Selesaikan verifikasi keamanan sebelum masuk." }, 400);
+  }
+
+  const hostname = new URL(request.url).hostname;
+  const local = ["localhost", "127.0.0.1", "[::1]"].includes(hostname);
+  const testSecret = /^[123]x0{31}AA$/.test(env.TURNSTILE_SECRET_KEY);
+  if (testSecret && !local) return json({ ok: false, error: unavailable }, 503);
+
+  try {
+    const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: token }),
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!response.ok) return json({ ok: false, error: unavailable }, 503);
+    const result = await response.json();
+    if (result?.success === true &&
+        (testSecret || (result.hostname === hostname && result.action === "login"))) {
+      return null;
+    }
+    return json({ ok: false, error: "Verifikasi keamanan gagal atau kedaluwarsa. Silakan coba lagi." }, 403);
+  } catch {
+    return json({ ok: false, error: unavailable }, 503);
+  }
+}
+
 async function login(request, env) {
   if (await throttleExceeded(request, env)) {
     await audit(env, null, "login_throttled");
@@ -208,6 +241,9 @@ async function login(request, env) {
     await recordThrottle(request, env, false);
     return json({ ok: false, error: "Username atau password salah." }, 401);
   }
+
+  const challengeError = await verifyLoginChallenge(request, env, body?.turnstileToken);
+  if (challengeError) return challengeError;
 
   const user = await env.DB.prepare(`
     SELECT id, username, display_name, role, password_salt, password_hash,

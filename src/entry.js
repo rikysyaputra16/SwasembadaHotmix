@@ -20,7 +20,13 @@ export default {
     }
 
     if (request.method === "GET" && url.pathname === "/login/") {
-      return withHeaders(await env.ASSETS.fetch(request));
+      const page = withHeaders(await env.ASSETS.fetch(request));
+      if (!page.ok || page.status !== 200) return page;
+      return new HTMLRewriter().on("#loginChallenge", {
+        element(element) {
+          element.setAttribute("data-sitekey", env.TURNSTILE_SITE_KEY || "");
+        },
+      }).transform(page);
     }
 
     if (request.method === "GET" && url.pathname === "/login-map") {
