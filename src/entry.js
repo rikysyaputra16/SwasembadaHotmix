@@ -16,7 +16,8 @@ export default {
     const url = new URL(request.url);
 
     if (request.method === "GET" && (url.pathname === "/login" || url.pathname === "/login.html")) {
-      return withHeaders(Response.redirect(new URL("/login/", request.url), 302));
+      // Use a fresh cache key for the login form that requires Turnstile.
+      return withHeaders(Response.redirect(new URL("/login/?v=turnstile", request.url), 302));
     }
 
     if (request.method === "GET" && url.pathname === "/login/") {
