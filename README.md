@@ -100,11 +100,10 @@ The script reads `private-migration/r2-manifest.json` and uploads the local proo
 
 Login requires Cloudflare Turnstile. For local development, copy the public test
 credentials from `.env.example` to the ignored `.dev.vars` file. For production,
-create a Managed Turnstile widget for the production hostname and configure the
-Worker with `TURNSTILE_SITE_KEY` (the public site key) and `TURNSTILE_SECRET_KEY`
-(an encrypted Worker secret). Set both bindings before releasing the login
-change. Login returns an error when Turnstile configuration or verification is
-unavailable.
+the Managed Turnstile widget is restricted to `hotmixrt1.rngb.web.id`. Its public
+`TURNSTILE_SITE_KEY` is in `wrangler.jsonc`. Set the matching encrypted Worker
+secret `TURNSTILE_SECRET_KEY` before deploying to a new Worker. Login returns an
+error when Turnstile configuration or verification is unavailable.
 
 ```bash
 npm run deploy

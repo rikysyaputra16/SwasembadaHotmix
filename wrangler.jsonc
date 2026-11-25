@@ -3,6 +3,9 @@
   "name": "swasembada-hotmix",
   "main": "src/rbac-v2-router.js",
   "compatibility_date": "2026-09-11",
+  "vars": {
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAGSvb2XChNDrOGw4"
+  },
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",
